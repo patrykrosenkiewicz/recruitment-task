@@ -1,0 +1,27 @@
+{
+  "name": "recruitment-task-v3",
+  "version": "1.0.0",
+  "description": "Hey there!",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "devStart": "nodemon index.js",
+    "test": "mocha --exit",
+    "pretest": "test/utils/copyJsonForTest.sh",
+    "posttest": "rm data/dbTest.json"
+  },
+  "author": "Patryk Rosenkiewicz",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.17.2",
+    "express-graphql": "^0.12.0",
+    "graphql": "^16.2.0",
+    "lowdb": "^3.0.0"
+  },
+  "devDependencies": {
+    "chai": "^4.3.4",
+    "mocha": "^9.1.3",
+    "nodemon": "^2.0.15",
+    "supertest": "^6.2.0"
+  }
+}
