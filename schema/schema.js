@@ -3,7 +3,7 @@ import { join, dirname } from 'path'
 import { Low, JSONFile } from 'lowdb'
 import { fileURLToPath } from 'url'
 
-const { GraphQLObjectType, GraphQLString, GraphQLList, GraphQLID, GraphQLSchema } = graphql;
+const { GraphQLObjectType, GraphQLString, GraphQLList, GraphQLID, GraphQLSchema, GraphQLInt } = graphql;
 
 // ###################################
 // TODO move that to separate file
@@ -30,7 +30,7 @@ const MovieType = new GraphQLObjectType({
         actors: { type: GraphQLString },
         plot: { type: GraphQLString },
         posterUrl: { type: GraphQLString }
-    })
+    }),
 });
 
 const RootQuery = new GraphQLObjectType({
@@ -45,9 +45,12 @@ const RootQuery = new GraphQLObjectType({
         },
         movies: {
             type: new GraphQLList(MovieType),
+            args: { duration: { type: GraphQLInt } },
             resolve(parent, args){
                 const { movies } = db.data
-                return movies;
+                const duration = args.hasOwnProperty('duration') ? args.duration : '';
+                const resultMovies = duration == '' ? movies : movies.filter(movie => (movie.runtime >= duration - 10) && (movie.runtime <= duration + 10));
+                return resultMovies;
             }
         },
     }
