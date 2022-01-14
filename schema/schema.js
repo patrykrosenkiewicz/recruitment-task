@@ -2,6 +2,7 @@ import graphql from 'graphql';
 import { join, dirname } from 'path'
 import { Low, JSONFile } from 'lowdb'
 import { fileURLToPath } from 'url'
+import { random } from 'lodash-es';
 
 const { GraphQLObjectType, GraphQLString, GraphQLList, GraphQLID, GraphQLSchema, GraphQLInt } = graphql;
 
@@ -40,7 +41,9 @@ const RootQuery = new GraphQLObjectType({
             type: MovieType,
             args: { id: { type: GraphQLID } },
             resolve(parent, args){
-                // TODO get a singel movie by id than extrapolate it for durations and genres
+                const { movies } = db.data
+                const randomMovie = movies[random(0, movies.length)];
+                return randomMovie;
             }
         },
         movies: {

@@ -15,17 +15,42 @@ describe('Post Endpoints', () => {
     })
 
     it('should get all movies with runtime between duration -10 and duration +10', async () => {
+        const duration = 190
+        const res = await request(app)
+            .post('/graphql')
+            .send({ 
+                query: '{ movies(duration: 190) {runtime}}',
+            })
+        expect(res.statusCode).equal(200)
+        const movies = res.body.data.movies;
+        expect(movies).to.satisfy(movies => movies.every(movie => (movie.runtime >= duration - 10) && (movie.runtime <= duration + 10)));
+    })
+
+    it('should get a random movie', async () => {
         const duration = 130
         const res = await request(app)
             .post('/graphql')
             .send({ 
-                query: '{ movies {runtime}}',
-                variables: { duration }
+                query: '{ movie {id, title, year, runtime, genres, director, actors, plot, posterUrl}}'
             })
         expect(res.statusCode).equal(200)
-        const movies = res.body.data.movies;
-
-        expect(movies).to.satisfy(movies => movies.every(movie => (movie.runtime >= duration - 10) && (movie.runtime <= duration + 10)));
+        const secondRes = await request(app)
+            .post('/graphql')
+            .send({ 
+                query: '{ movie {id, title, year, runtime, genres, director, actors, plot, posterUrl}}'
+            })
+        expect(res.statusCode).equal(200)
+        const thirdRes = await request(app)
+        .post('/graphql')
+        .send({ 
+            query: '{ movie {id, title, year, runtime, genres, director, actors, plot, posterUrl}}'
+        })
+        expect(res.statusCode).equal(200)
+        const movie = res.body.data.movie;
+        const secondMovie = secondRes.body.data.movie;
+        const thirdMovie = thirdRes.body.data.movie;
+        
+        expect(movie).to.not.deep.equal(secondMovie).to.not.deep.equal(thirdMovie);
     })
 })
 
