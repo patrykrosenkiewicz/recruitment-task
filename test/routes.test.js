@@ -6,26 +6,6 @@ import {expect} from "chai"
 import {app} from '../index.js';
 
 describe('Post Endpoints', () => {
-    it('should get all movies with titles', async () => {
-        const res = await request(app)
-            .post('/graphql')
-            .send({ query: '{ movies {title}}'})
-        expect(res.statusCode).equal(200)
-        expect(res.body.data.movies).deep.to.equal(moviesWithTitles)
-    })
-
-    it('should get all movies with runtime between duration -10 and duration +10', async () => {
-        const duration = 190
-        const res = await request(app)
-            .post('/graphql')
-            .send({ 
-                query: `{ movies(duration: ${duration}) {runtime}}`,
-            })
-        expect(res.statusCode).equal(200)
-        const movies = res.body.data.movies;
-        expect(movies).to.satisfy(movies => movies.every(movie => (movie.runtime >= duration - 10) && (movie.runtime <= duration + 10)));
-    })
-
     it('should get a random movie', async () => {
         const res = await request(app)
             .post('/graphql')
@@ -39,17 +19,13 @@ describe('Post Endpoints', () => {
                 query: '{ movie {id, title, year, runtime, genres, director, actors, plot, posterUrl}}'
             })
         expect(res.statusCode).equal(200)
-        const thirdRes = await request(app)
-        .post('/graphql')
-        .send({ 
-            query: '{ movie {id, title, year, runtime, genres, director, actors, plot, posterUrl}}'
-        })
-        expect(res.statusCode).equal(200)
         const movie = res.body.data.movie;
         const secondMovie = secondRes.body.data.movie;
-        const thirdMovie = thirdRes.body.data.movie;
-        
-        expect(movie).to.not.deep.equal(secondMovie).to.not.deep.equal(thirdMovie);
+
+        expect(movie).to.have.lengthOf(1);
+        expect(secondMovie).to.have.lengthOf(1);
+
+        expect(movie[0]).to.not.deep.equal(secondMovie[0]);
     })
 
     it('should get a random movie with runtime between duration', async () => {
@@ -66,19 +42,33 @@ describe('Post Endpoints', () => {
                 query: `{ movie(duration: ${duration}) {id, title, year, runtime, genres, director, actors, plot, posterUrl}}`
             })
         expect(res.statusCode).equal(200)
-        const thirdRes = await request(app)
-        .post('/graphql')
-        .send({ 
-            query: `{ movie(duration: ${duration}) {id, title, year, runtime, genres, director, actors, plot, posterUrl}}`
-        })
-        expect(res.statusCode).equal(200)
+        
         const movie = res.body.data.movie;
         const secondMovie = secondRes.body.data.movie;
-        const thirdMovie = thirdRes.body.data.movie;
-        
-        expect(movie).to.not.deep.equal(secondMovie).to.not.deep.equal(thirdMovie);
+                
+        expect(movie).to.have.lengthOf(1);
+        expect(secondMovie).to.have.lengthOf(1);
+
+        expect(movie[0]).to.not.deep.equal(secondMovie[0]);
+    })
+
+    it('should get all movies with genres', async () => {
+        const requestedGenres = ["Comedy", "Fantasy", "Crime"];
+        const genresQuery = '["Comedy", "Fantasy", "Crime"]';
+
+        const res = await request(app)
+            .post('/graphql')
+            .send({ 
+                query: `{ movie(genres: ${genresQuery}) {id, title, genres} }`
+            })
+        expect(res.statusCode).equal(200)
+
+        const movies = res.body.data.movie;
+        expect(movies).to.satisfy(movies => movies.every(movie => movie.genres.some(genre => requestedGenres.includes(genre))));
+
     })
 })
+
 
 const moviesWithTitles = [
     {"title": "Beetlejuice"},

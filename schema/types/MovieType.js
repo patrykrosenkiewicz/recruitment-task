@@ -1,7 +1,7 @@
 import graphql from 'graphql';
 const { GraphQLObjectType, GraphQLString, GraphQLList, GraphQLID } = graphql;
 
-export const MovieType = new GraphQLObjectType({
+export const MovieType = new GraphQLList(new GraphQLObjectType({
     name: 'Movie',
     fields: ( ) => ({
         id: { type: GraphQLID },
@@ -14,4 +14,4 @@ export const MovieType = new GraphQLObjectType({
         plot: { type: GraphQLString },
         posterUrl: { type: GraphQLString }
     }),
-});
+}));
