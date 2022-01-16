@@ -39,10 +39,13 @@ const RootQuery = new GraphQLObjectType({
     fields: {
         movie: {
             type: MovieType,
-            args: { id: { type: GraphQLID } },
+            args: { duration: { type: GraphQLInt } },
             resolve(parent, args){
                 const { movies } = db.data
-                const randomMovie = movies[random(0, movies.length)];
+                const duration = args.hasOwnProperty('duration') ? args.duration : '';
+                const resultMovies = duration == '' ? movies : movies.filter(movie => (movie.runtime >= duration - 10) && (movie.runtime <= duration + 10));
+
+                const randomMovie = resultMovies[random(0, resultMovies.length)];
                 return randomMovie;
             }
         },

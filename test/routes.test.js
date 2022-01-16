@@ -19,7 +19,7 @@ describe('Post Endpoints', () => {
         const res = await request(app)
             .post('/graphql')
             .send({ 
-                query: '{ movies(duration: 190) {runtime}}',
+                query: `{ movies(duration: ${duration}) {runtime}}`,
             })
         expect(res.statusCode).equal(200)
         const movies = res.body.data.movies;
@@ -27,7 +27,6 @@ describe('Post Endpoints', () => {
     })
 
     it('should get a random movie', async () => {
-        const duration = 130
         const res = await request(app)
             .post('/graphql')
             .send({ 
@@ -44,6 +43,33 @@ describe('Post Endpoints', () => {
         .post('/graphql')
         .send({ 
             query: '{ movie {id, title, year, runtime, genres, director, actors, plot, posterUrl}}'
+        })
+        expect(res.statusCode).equal(200)
+        const movie = res.body.data.movie;
+        const secondMovie = secondRes.body.data.movie;
+        const thirdMovie = thirdRes.body.data.movie;
+        
+        expect(movie).to.not.deep.equal(secondMovie).to.not.deep.equal(thirdMovie);
+    })
+
+    it('should get a random movie with runtime between duration', async () => {
+        const duration = 130
+        const res = await request(app)
+            .post('/graphql')
+            .send({ 
+                query: `{ movie(duration: ${duration}) {id, title, year, runtime, genres, director, actors, plot, posterUrl}}`
+            })
+        expect(res.statusCode).equal(200)
+        const secondRes = await request(app)
+            .post('/graphql')
+            .send({ 
+                query: `{ movie(duration: ${duration}) {id, title, year, runtime, genres, director, actors, plot, posterUrl}}`
+            })
+        expect(res.statusCode).equal(200)
+        const thirdRes = await request(app)
+        .post('/graphql')
+        .send({ 
+            query: `{ movie(duration: ${duration}) {id, title, year, runtime, genres, director, actors, plot, posterUrl}}`
         })
         expect(res.statusCode).equal(200)
         const movie = res.body.data.movie;
