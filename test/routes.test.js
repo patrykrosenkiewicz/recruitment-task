@@ -80,11 +80,52 @@ describe('Post Endpoints', () => {
                 query: `{ movie(duration: ${duration}, genres: ${genresQuery}) {title, genres, runtime} }`
             })
         expect(res.statusCode).equal(200)
-
         const movies = res.body.data.movie;
         expect(movies).to.satisfy(movies => movies.every(movie => movie.genres.some(genre => requestedGenres.includes(genre))));
         const slicedMovies = movies.slice(0, 4);
         expect(slicedMovies).to.deep.equal(sortedMoviesByGenresAndFilteredByDurationWithTitles)
+    })
+
+    it('should add movie', async () => {
+        const genresQuery = '["Comedy", "Animation", "Family"]';
+        const duration = 97;
+        const title = "test";
+        const year = 2021;
+        const director = "director";
+        const actors = "actors";
+        const plot = "plot";
+        const posterUrl = "http://www.posterUrl.pl";
+
+        const res = await request(app)
+            .post('/graphql')
+            .send({ 
+                query: `mutation { 
+                    addMovie(genres: ${genresQuery}, title: "${title}", year: ${year}, duration: ${duration}, director: "${director}", actors: "${actors}", plot: "${plot}", posterUrl: "${posterUrl}") {
+                        title
+                    }
+                }`
+            })
+        expect(res.statusCode).equal(200);
+
+        const addedMovieRes = await request(app)
+        .post('/graphql')
+        .send({ 
+            query: '{ movie(title: "test") {title}}'
+        })
+        expect(addedMovieRes.statusCode).equal(200)
+        const movies = addedMovieRes.body.data.movie;
+        expect(movies[0].title).equal(title);
+
+        const resDelete = await request(app)
+        .post('/graphql')
+        .send({ 
+            query: `mutation { 
+                deleteMovie(title: "test") {
+                    title
+                }
+            }`
+        })
+        expect(resDelete.statusCode).equal(200);
     })
 
 })
@@ -113,21 +154,21 @@ const sortedMoviesByGenresAndFilteredByDurationWithTitles = [
     {
         title: 'Planet 51',
         genres: [ 'Animation', 'Adventure', 'Comedy' ],
-        runtime: '91',
+        runtime: 91,
     },
     {
         title: 'Mary and Max',
         genres: [ 'Animation', 'Comedy', 'Drama' ],
-        runtime: '92',
+        runtime: 92,
     },
     {
         title: 'Despicable Me 2',
         genres: [ 'Animation', 'Adventure', 'Comedy' ],
-        runtime: '98',
+        runtime: 98,
     },
     {
         title: 'Madagascar',
         genres: [ 'Animation', 'Adventure', 'Comedy' ],
-        runtime: '86',
+        runtime: 86,
     }
 ]
