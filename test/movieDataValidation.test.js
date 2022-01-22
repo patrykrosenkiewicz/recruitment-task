@@ -1,16 +1,16 @@
-import { movieSchema } from '../models/movie.js';
+import { movieDataValidation } from '../models/movie.js';
 import mocha from "mocha"
 const {describe, it} = mocha
 import {expect} from "chai"
 
 describe('Movie data validation', () => {
     it('should validate movie data', () => {
-        const result = movieSchema.validate(validMovieData);
+        const result = movieDataValidation.validate(validMovieData);
         expect(result).to.not.have.property('error');
     })
 
     it('should fail to validate movie data', () => {
-        const result = movieSchema.validate(unvalidMovieData);
+        const result = movieDataValidation.validate(unvalidMovieData);
         expect(result).to.have.property('error');
     })
 })

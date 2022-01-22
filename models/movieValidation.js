@@ -5,7 +5,7 @@ await dbClient.read();
 dbClient.data = dbClient.data || { movies: [], genres: [] };
 const { genres } = dbClient.data;
 
-export const movieSchema = Joi.object({
+export const movieDataValidation = Joi.object({
     title: Joi.string()
         .alphanum()
         .max(255)
