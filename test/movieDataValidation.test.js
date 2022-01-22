@@ -1,4 +1,4 @@
-import { movieDataValidation } from '../models/movie.js';
+import { movieDataValidation } from '../models/movieValidation.js';
 import mocha from "mocha"
 const {describe, it} = mocha
 import {expect} from "chai"

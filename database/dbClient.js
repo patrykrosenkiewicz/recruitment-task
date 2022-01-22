@@ -7,3 +7,6 @@ const file = join(__dirname, '../data/db.json')
 console.log(file);
 const adapter = new JSONFile(file);
 export const dbClient = new Low(adapter);
+
+await dbClient.read()
+dbClient.data = dbClient.data || { movies: [], genres: [] }

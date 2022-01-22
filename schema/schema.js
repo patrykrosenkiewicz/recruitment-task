@@ -2,31 +2,10 @@ import graphql from 'graphql';
 import { random, intersection } from 'lodash-es';
 import { dbClient } from '../database/dbClient.js';
 import { MovieType } from './types/MovieType.js';
+import  Movie  from '../models/movie.js';
+import { sortMoviesByAmoutOfGenresMatch } from '../utils/Movie/moviesSort.js';
 
 const { GraphQLObjectType, GraphQLString, GraphQLList, GraphQLID, GraphQLSchema, GraphQLInt } = graphql;
-
-await dbClient.read()
-dbClient.data = dbClient.data || { movies: [], genres: [] }
-
-const getMoviesBetweenDuration = (movies, duration) => {
-    return duration == '' ? movies : movies.filter(movie => (movie.runtime >= duration - 10) && (movie.runtime <= duration + 10));
-}
-
-const getMoviesWithGenres = (movies, genres) => {
-    return movies.filter(movie => movie.genres.some(genre => genres.includes(genre)));
-}
-
-const sortMoviesByAmoutOfGenresMatch = (movies, genres)=> {
-    // console.log('first not sorted', movies[0]);
-    let sortedMovies = movies.sort((a,b) => {
-        const intersectionA = intersection(a.genres, genres);
-        const intersectionB = intersection(b.genres, genres);
-        return intersectionB.length - intersectionA.length;
-    });
-
-    return sortedMovies
-}
-
 
 const RootQuery = new GraphQLObjectType({
     name: 'RootQueryType',
@@ -35,20 +14,20 @@ const RootQuery = new GraphQLObjectType({
             type: MovieType,
             args: { duration: { type: GraphQLInt }, genres: { type: new GraphQLList(GraphQLString) }, title: { type: GraphQLString}},
             resolve(parent, args){
-                const { movies } = dbClient.data
                 if(args.hasOwnProperty('title') && args.title !== ''){
-                    return movies.filter(movie => movie.title === args.title);
+                    return Movie.findByTitle(args.title);
                 }
                 const duration = args.hasOwnProperty('duration') ? args.duration : '';
                 
-                const resultMovies = getMoviesBetweenDuration(movies, duration);
+                const moviesBetweenDuration = Movie.getMoviesBetweenDuration(duration);
                 const genres = args.hasOwnProperty('genres') ? args.genres : '';
                 if(genres !== ''){
-                    const moviesWithGenres = sortMoviesByAmoutOfGenresMatch(getMoviesWithGenres(resultMovies, genres), genres);
-                    return moviesWithGenres;
+                    const moviesWithGenres = Movie.getMoviesWithGenres(genres, moviesBetweenDuration);
+                    const sortedMoviesWithGenres = sortMoviesByAmoutOfGenresMatch(moviesWithGenres, genres);
+
+                    return sortedMoviesWithGenres;
                 } else {
-                    const randomMovie = [resultMovies[random(0, resultMovies.length)]];
-                    return randomMovie;
+                    return [moviesBetweenDuration[random(0, moviesBetweenDuration.length)]];
                 }
                 
             }
@@ -72,20 +51,18 @@ const Mutation = new GraphQLObjectType({
                 posterUrl: { type: GraphQLString }
             },
             async resolve(parent, args){
-                // console.log(args)
-                const { movies } = dbClient.data;
-                const movieToAdd = {
+                const movieData = {
                     title: args.title,
                     year: args.year,
-                    duration: args.duration,
+                    runtime: args.duration,
                     genres: args.genres,
                     director: args.director,
                     actors: args.actors,
                     plot: args.plot,
                     posterUrl: args.posterUrl,
                 };
-                movies.push(movieToAdd);
-                await dbClient.write();
+                const addMovie = new Movie(movieData);
+                return [await addMovie.save()];
             }
         },
         deleteMovie: {
