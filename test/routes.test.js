@@ -126,6 +126,7 @@ describe('Post Endpoints', () => {
             }`
         })
         expect(resDelete.statusCode).equal(200);
+        expect(resDelete.body).to.not.have.property('errors');
     })
 
 })
