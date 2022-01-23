@@ -1,7 +1,7 @@
 import { random } from 'lodash-es';
 
 import { Movie } from '../models/movie.js';
-import { sortMoviesByAmoutOfGenresMatch } from '../utils/Movie/moviesSort.js';
+import { sortMoviesByAmoutOfGenresMatch } from '../utils/movie/moviesSort.js';
 
 export const MovieController = function () {};
 

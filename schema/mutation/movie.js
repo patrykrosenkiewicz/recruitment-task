@@ -2,8 +2,9 @@ import graphql from 'graphql';
 
 import { MovieType } from '../types/MovieType.js';
 import { MovieController } from '../../controllers/movie.js';
-import { dbClient } from '../../database/dbClient.js';
+import { initDb } from '../../database/dbClient.js';
 
+const dbClient = await initDb();
 const { GraphQLObjectType, GraphQLString, GraphQLList, GraphQLInt } = graphql;
 
 export const Mutation = new GraphQLObjectType({

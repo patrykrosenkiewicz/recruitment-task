@@ -1,6 +1,7 @@
 import  Joi  from 'joi';
-import { dbClient } from '../database/dbClient.js';
+import { initDb } from '../database/dbClient.js';
 
+const dbClient = await initDb();
 let { genres } = dbClient.data;
 genres = genres ? genres : [] ;
 

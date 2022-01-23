@@ -1,4 +1,4 @@
-import { dbClient } from '../database/dbClient.js';
+import { initDb } from '../database/dbClient.js';
 import  Joi  from 'joi';
 import { movieDataValidation } from './movieValidation.js';
 import { uniqWith, sortBy, isEqual } from 'lodash-es';
@@ -11,6 +11,7 @@ export const Movie = function (data) {
 
 Movie.prototype.data = {};
 
+const dbClient = await initDb();
 Movie.findByTitle = (title, moviesArr = []) => {
 	let { movies } = dbClient.data;
 	movies = moviesArr.length > 0 ? moviesArr : movies;
