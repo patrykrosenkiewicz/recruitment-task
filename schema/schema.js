@@ -1,6 +1,6 @@
 import graphql from 'graphql';
-import { RootQuery as MovieRootQuery } from './Query/movie.js';
-import { Mutation as MovieMutation } from './Mutation/movie.js';
+import { RootQuery as MovieRootQuery } from './query/movie.js';
+import { Mutation as MovieMutation } from './mutation/movie.js';
 
 const { GraphQLSchema} = graphql;
 
