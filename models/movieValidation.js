@@ -1,9 +1,9 @@
 import  Joi  from 'joi';
 import { dbClient } from '../database/dbClient.js';
 
-await dbClient.read();
-dbClient.data = dbClient.data || { movies: [], genres: [] };
-const { genres } = dbClient.data;
+dbClient.data = dbClient.data;
+let { genres } = dbClient.data;
+genres = genres ? genres : [] ;
 
 export const movieDataValidation = Joi.object({
     title: Joi.string()
