@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "devStart": "nodemon index.js",
-    "test": "mocha --exit",
+    "test": "mocha --exit || true",
     "pretest": "test/utils/copyJsonForTest.sh -t setup-test",
     "posttest": "test/utils/copyJsonForTest.sh -t cleanup-test"
   },
