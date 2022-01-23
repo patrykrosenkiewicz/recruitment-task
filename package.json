@@ -7,8 +7,8 @@
   "scripts": {
     "devStart": "nodemon index.js",
     "test": "mocha --exit",
-    "pretest": "test/utils/copyJsonForTest.sh",
-    "posttest": "rm data/dbTest.json"
+    "pretest": "test/utils/copyJsonForTest.sh -t setup-test",
+    "posttest": "test/utils/copyJsonForTest.sh -t cleanup-test"
   },
   "author": "Patryk Rosenkiewicz",
   "license": "ISC",

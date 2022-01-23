@@ -13,7 +13,7 @@ export const RootQuery = new GraphQLObjectType({
             type: MovieType,
             args: { duration: { type: GraphQLInt }, genres: { type: new GraphQLList(GraphQLString) }, title: { type: GraphQLString}},
             resolve(parent, args){
-                if(args.hasOwnProperty('title') && args.title !== ''){
+                if(args.hasOwnProperty('title') && args.title !== '' && !args.hasOwnProperty('duration') && !args.hasOwnProperty('genres')){
                     return Movie.findByTitle(args.title);
                 }
                 const duration = args.hasOwnProperty('duration') ? args.duration : '';
